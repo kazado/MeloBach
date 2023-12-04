@@ -763,7 +763,8 @@ audio::-webkit-media-controls-volume-slider::-webkit-slider-thumb {
 	
 		<button onclick="loadTrainingData()" style="font-size: 40.5px;" class="button2">SUBMIT</button>
 
-		<button onclick="playChordsWithPause(1000);" style="font-size: 40.5px;" class="button2">PLAY</button>
+		<button onclick="playChordsWithPause();" style="font-size: 40.5px;" class="button2">PLAY</button>
+		<button class = "button2" style="font-size: 40.5px;" id="convertButton" >DOWNLOAD</button>
 	
 
 
@@ -1029,22 +1030,38 @@ audio::-webkit-media-controls-volume-slider::-webkit-slider-thumb {
 
 <script type ="text/javascript" src="https://code.jquery.com/jquery.min.js"></script>
 <body>
-    <button id="convertButton">Convert to MIDI</button>
+    
 
-    <script src="path/to/midi-writer.js"></script>
+    <script src="./midiwriter.js"></script>
 </body>
 <script>
+function convertBeatstoNotes(beats) {
+	var notes = [];
+	for (var i = 0; i < beats.length; i++) {
+		notes.push(beats[i][0]['name']);
+	
+	}
+	
+	return notes;
+}
+function convertBeatstoDurations(beats) {
+	var durations = [];
+	for (var i = 0; i < beats.length; i++) {
+		durations.push(String(16/durationToSixteenthCount(beats[i][0]['duration'])));
+		console.log(durations)
+	}
+	
+	return durations;
+}
 document.getElementById("convertButton").addEventListener("click", function () {
     // Define an array of notes (e.g., ["C4", "E4", "G4"])
-    var notes = ["C4", "E4", "G4"];
-
-    // Convert notes to MIDI
-    convertToMidi(notes);
+   
+	var notes = convertBeatstoNotes(beats);
+	var durations = convertBeatstoDurations(beats);
+    convertToMidi(notes, durations);
 });
-
-function convertToMidi(notes) {
+function convertToMidi(notes, durations) {
     // Create a new MidiWriter object
-    var MidiWriter = require('midi-writer-js');
     var track = new MidiWriter.Track();
 
     // Define instrument and tempo
@@ -1053,7 +1070,7 @@ function convertToMidi(notes) {
 
     // Add notes to the track
     for (var i = 0; i < notes.length; i++) {
-        track.addEvent(new MidiWriter.NoteEvent({ pitch: notes[i], duration: '4' }));
+        track.addEvent(new MidiWriter.NoteEvent({ pitch: notes[i], duration: durations[i]}));
     }
 
     // Create a new MidiWriter.Writer object
@@ -1677,10 +1694,10 @@ myButton.addEventListener("click", function () {
 	
 	
 	
-	function playChordsWithPause(pauseDuration) {
+	function playChordsWithPause() {
 	
 			let index = 0;
-	
+			var pauseDuration;
 			
 	
 			function playNextChord() {
@@ -1698,6 +1715,7 @@ myButton.addEventListener("click", function () {
 							console.log(name.substring(0,2));
 							name = sharpToFlat(name.substring(0,2)) + name.substring(2,3);
 						}
+						pauseDuration = durationToSixteenthCount(beats[index][i]["duration"]) * 250;
 
 						console.log(name);
 	
@@ -1897,7 +1915,7 @@ for (var j = 0; j < note.length; j++){
 	
 	
 	
-	playChordsWithPause(1000);
+	playChordsWithPause();
 	
 	
 	
@@ -2326,7 +2344,6 @@ for (var j = 0; j < note.length; j++){
 	
 	
 				return 'C3';
-	
 	
 	
 			}
@@ -3645,7 +3662,7 @@ for (var j = 0; j < note.length; j++){
 	
 	
 	
-	const SIXTEENTH_WIDTH = 24;
+	const SIXTEENTH_WIDTH = 18;
 	
 	
 	
@@ -4665,11 +4682,11 @@ for (var j = 0; j < note.length; j++){
 						
 	
 						if (beats.indexOf(currentBeat) > 15 && beats.indexOf(currentBeat) < 31) {
-				drawNote(LEFT_PADDING + SIXTEENTH_WIDTH * totalDuration - (LINE_WIDTH - 2 * SIXTEENTH_WIDTH), positions[currentIndex] + 170, currentBeat[k].duration, accidental, currentBeat[k]);
+				drawNote(LEFT_PADDING + SIXTEENTH_WIDTH * (totalDuration - 64), positions[currentIndex] + 170, currentBeat[k].duration, accidental, currentBeat[k]);
 			} else if (beats.indexOf(currentBeat) > 31 && beats.indexOf(currentBeat) <= 47) {
-				drawNote(LEFT_PADDING + SIXTEENTH_WIDTH * totalDuration - (LINE_WIDTH * 2 - 3 * SIXTEENTH_WIDTH) + SIXTEENTH_WIDTH, positions[currentIndex] + 170 * 2, currentBeat[k].duration, accidental, currentBeat[k]);
+				drawNote(LEFT_PADDING + SIXTEENTH_WIDTH * (totalDuration - 128), positions[currentIndex] + 170 * 2, currentBeat[k].duration, accidental, currentBeat[k]);
 			} else if (beats.indexOf(currentBeat) > 47 && beats.indexOf(currentBeat) <= 63) {
-				drawNote(LEFT_PADDING + SIXTEENTH_WIDTH * totalDuration - (LINE_WIDTH * 3 - 4 * SIXTEENTH_WIDTH) + SIXTEENTH_WIDTH, positions[currentIndex] + 170 * 3, currentBeat[k].duration, accidental, currentBeat[k]);
+				drawNote(LEFT_PADDING + SIXTEENTH_WIDTH * (totalDuration - 192) - (LINE_WIDTH * 3 - 4 * SIXTEENTH_WIDTH) + SIXTEENTH_WIDTH, positions[currentIndex] + 170 * 3, currentBeat[k].duration, accidental, currentBeat[k]);
 			} else {
 				drawNote(LEFT_PADDING + SIXTEENTH_WIDTH * totalDuration, positions[currentIndex], currentBeat[k].duration, accidental, currentBeat[k]);
 					
@@ -4793,7 +4810,7 @@ for (var j = 0; j < note.length; j++){
 	
 	
 	
-				return 3;
+				return 4;
 	
 	
 	
