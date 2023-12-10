@@ -761,7 +761,8 @@ audio::-webkit-media-controls-volume-slider::-webkit-slider-thumb {
 	
 	
 	
-		<button onclick="loadTrainingData()" style="font-size: 40.5px;" class="button2">SUBMIT</button>
+		<button onclick="loadTrainingData1()" style="font-size: 40.5px;" class="button2">CHORALE</button>
+		<button onclick="loadTrainingData2()" style="font-size: 40.5px;" class="button2">HARMONIZE</button>
 
 		<button onclick="playChordsWithPause();" style="font-size: 40.5px;" class="button2">PLAY</button>
 		<button class = "button2" style="font-size: 40.5px;" id="convertButton" >DOWNLOAD</button>
@@ -1712,7 +1713,6 @@ myButton.addEventListener("click", function () {
 	
 						
 						if (name.substring(1,2) == "#") {
-							console.log(name.substring(0,2));
 							name = sharpToFlat(name.substring(0,2)) + name.substring(2,3);
 						}
 						pauseDuration = durationToSixteenthCount(beats[index][i]["duration"]) * 250;
@@ -1761,10 +1761,7 @@ myButton.addEventListener("click", function () {
 }
 
 		
-	
-	
-	
-function loadTrainingData() {
+function loadTrainingData1() {
 	
 	
 	
@@ -1889,7 +1886,7 @@ for (var j = 0; j < note.length; j++){
 
 
 
-		   console.log(oct);
+		
 
 
 
@@ -1918,16 +1915,9 @@ for (var j = 0; j < note.length; j++){
 	playChordsWithPause();
 	
 	
-	
 	for (var i = 0; i < beats.length; i++) {
 	
-	
-	
-		for (var j = 0; j < beats[i].length - 1; j++){
-	
-	
-	
-			
+		
 	
 	
 	
@@ -1964,10 +1954,268 @@ for (var j = 0; j < note.length; j++){
 	
 	
 				
-	
+			
 	
 	
 			}
+	
+	
+	
+		}
+	
+	
+	
+	
+	
+	console.log(beats);
+	
+	drawNotes();
+	
+	
+	
+		  });
+	
+	
+	
+		  
+	
+	
+	
+	}	
+	
+	
+function loadTrainingData2() {
+	
+	
+	
+			 
+	
+	
+	
+	// Sample JSON data
+
+
+
+	$.getJSON("ChordGetterJSON.json", function(jsonData) {
+
+
+
+
+
+
+// const targetNotes = beats;//['C', 'E', 'G']; 
+
+
+
+console.log(beats);
+
+
+
+
+
+var targetNotes = [];
+
+
+
+for (var i = 0; i < beats[0].length; i++) {
+
+
+
+   targetNotes.push(beats[0][i]["name"].replace(/[0-9]/g,""));
+
+
+
+}
+
+
+
+var chords = [];
+
+
+
+ for (var i = 0; i < jsonData.length; i++) {
+
+
+
+chords.push(jsonData[i]['chords']);
+
+
+
+ }
+
+
+
+ const closestMatch = findClosestMatch(targetNotes, chords);
+
+
+
+
+
+
+
+// console.log(closestMatch);
+
+
+
+const trimMatched = trimToSixteen(targetNotes, closestMatch);
+
+
+
+console.log(trimMatched);
+
+
+
+for (var i = 0; i < trimMatched.length; i++){
+
+
+
+const note = trimMatched[i];
+
+
+
+for (var j = 0; j < note.length; j++){
+
+
+
+   // if (beats.length <= trimMatched.length) {
+
+
+
+	   // noteName = 
+
+
+
+	   // if (!note.includes(beats[i][0]["name"].replace(/[0-9]/g,""))) {
+
+
+
+		   // console.log(beats[i][0]);
+
+
+
+		   if (beats.length <= i){
+
+
+
+			   beats.push([]);
+
+
+
+		   }
+
+
+
+		   var oct = Math.floor(Math.random()*5)+2;
+
+
+
+		
+
+
+
+		   beats[i].push(new Note(note[j] + oct.toString(), "q"));
+
+
+
+	   // }
+
+
+
+   // }
+
+
+
+}
+
+
+
+}
+	
+	
+	
+	
+	
+	playChordsWithPause();
+	
+	const majorChords = {
+  'C': ['C', 'E', 'G', 'A#'],
+  'C#': ['C#', 'F', 'G#', 'B'],
+  'D': ['D', 'F#', 'A', 'C'],
+  'D#': ['D#', 'G', 'A#', 'C#'],
+  'E': ['E', 'G#', 'B', 'D'],
+  'F': ['F', 'A', 'C', 'D#'],
+  'F#': ['F#', 'A#', 'C#', 'E'],
+  'G': ['G', 'B', 'D', 'F'],
+  'G#': ['G#', 'C', 'D#', 'F#'],
+  'A': ['A', 'C#', 'E', 'G'],
+  'A#': ['A#', 'D', 'F', 'G#'],
+  'B': ['B', 'D#', 'F#', 'A']
+};
+	console.log(beats)
+	for (var i = 0; i < beats.length; i++) {
+	
+		var noteName = beats[i][0]['name'].slice(0,beats[i][0]['name'].length - 1);
+		console.log(noteName);
+		var chord;
+		if (majorChords.hasOwnProperty(noteName)) {
+    		chord = majorChords[noteName];
+  		}
+	
+	
+		for (var j = 0; j < beats[i].length; j++){
+			var found = false;
+			for (var k = 0; k < majorChords[noteName].length; k++){
+				
+				if (beats[i][j]['name'].slice(0,beats[i][j]['name'].length - 1) ==  majorChords[noteName][k]) {
+					found = true;
+			
+					break;
+				}
+			}
+			
+			if (!found) {
+				beats[i].pop(j);
+				j--;
+			}
+	
+	
+			// if (beats[i][j]["name"].substr(0,1) == beats[i][j+1]["name"].substr(0,1)) {
+	
+	
+	
+			// 	var randomNum = Math.floor(Math.random() * 2);
+	
+	
+	
+			// 	if (randomNum == 0){
+	
+	
+	
+			// 		beats[i].slice(j);
+	
+	
+	
+			// 	} else {
+	
+	
+	
+			// 		beats[i].slice(j+1);
+	
+	
+	
+			// 	}
+	
+	
+	
+				
+	
+	
+	
+				
+	
+	
+	
+			//}
 	
 	
 	
