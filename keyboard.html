@@ -1049,7 +1049,6 @@ function convertBeatstoDurations(beats) {
 	var durations = [];
 	for (var i = 0; i < beats.length; i++) {
 		durations.push(String(16/durationToSixteenthCount(beats[i][0]['duration'])));
-		console.log(durations)
 	}
 	
 	return durations;
@@ -1703,7 +1702,7 @@ myButton.addEventListener("click", function () {
 	
 			function playNextChord() {
 	
-			
+			console.log(beats);
 	
 				if (index < beats.length) {
 	
@@ -1907,11 +1906,33 @@ for (var j = 0; j < note.length; j++){
 
 
 }
-	
-	
-	
-	
-	
+const chordsArray = [
+  ['F3', 'A3', 'C4', 'F4'],
+  ['E3', 'G3', 'C4', 'C5'],
+  ['F3', 'A3', 'C4', 'A4'],
+  ['D3', 'A3', 'D4', 'F4'],
+  ['A2', 'A3', 'F4', 'C5'],
+  ['B2', 'F3', 'B4', 'D5'],
+  ['D3', 'F4', 'B4', 'D5'],
+  ['F3', 'F4', 'A4', 'C5'],
+  ['F3', 'F4', 'A4', 'C5'],
+  ['Bb3', 'F4', 'Bb4', 'D5'],
+  ['A3', 'G4', 'Bb4', 'E5'],
+  ['A3', 'F4', 'C5', 'F5'],
+  ['C4', 'E4', 'C5', 'E5'],
+  ['F3', 'F4', 'A4', 'D5'],
+  ['G3', 'D4', 'G4', 'D5'],
+  ['C3', 'E4', 'G4', 'C5'],
+];
+
+beats = [];
+for (var i = 0; i < chordsArray.length; i++) {
+	beats.push([]);
+	for (var j = 0; j < 4; j++) {
+		beats[i].push(new Note(chordsArray[i][j], "q"))
+	}
+}
+
 	playChordsWithPause();
 	
 	
@@ -1963,12 +1984,16 @@ for (var j = 0; j < note.length; j++){
 	
 		}
 	
-	
-	
-	
-	
+	beats = [];
+	for (var i = 0; i < chordsArray.length; i++) {
+	beats.push([]);
+	for (var j = 0; j < 4; j++) {
+		beats[i].push(new Note(chordsArray[i][j], "q"))
+	}
+}
+
 	console.log(beats);
-	
+		
 	drawNotes();
 	
 	
