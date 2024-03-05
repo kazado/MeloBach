@@ -659,7 +659,20 @@ audio::-webkit-media-controls-volume-slider::-webkit-slider-thumb {
   width: 40%;
 
 }
-	
+input[type="text"] {
+	width: 400px;
+	height: 50px;
+            padding: 10px;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            outline: none;
+            font-size: 20px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #2ecc71;
+        }
 	
 	
 		</style>
@@ -759,10 +772,15 @@ audio::-webkit-media-controls-volume-slider::-webkit-slider-thumb {
 	
 		<button onclick="refreshInput()" style="font-size: 40.5px;" class="button2">CLEAR</button>
 	
+		<br>
 	
-	
-		<button onclick="loadTrainingData1()" style="font-size: 40.5px;" class="button2">CHORALE</button>
-		<button onclick="loadTrainingData2()" style="font-size: 40.5px;" class="button2">HARMONIZE</button>
+		<button onclick="loadTrainingData1()" style="font-size: 40.5px;" class="button2">CHORALE HARMONIZE</button>
+		<button onclick="loadTrainingData2()" style="font-size: 40.5px;" class="button2">MELODIZE</button>
+		<br>
+		<input type="text" id="textInput" placeholder="Enter preferred music style">
+		<button onclick="loadTrainingData3()" style="font-size: 40.5px;" class="button2">PROMPT GENERATION</button>
+
+		<br>
 
 		<button onclick="playChordsWithPause();" style="font-size: 40.5px;" class="button2">PLAY</button>
 		<button class = "button2" style="font-size: 40.5px;" id="convertButton" >DOWNLOAD</button>
@@ -1906,32 +1924,32 @@ for (var j = 0; j < note.length; j++){
 
 
 }
-const chordsArray = [
-  ['F3', 'A3', 'C4', 'F4'],
-  ['E3', 'G3', 'C4', 'C5'],
-  ['F3', 'A3', 'C4', 'A4'],
-  ['D3', 'A3', 'D4', 'F4'],
-  ['A2', 'A3', 'F4', 'C5'],
-  ['B2', 'F3', 'B4', 'D5'],
-  ['D3', 'F4', 'B4', 'D5'],
-  ['F3', 'F4', 'A4', 'C5'],
-  ['F3', 'F4', 'A4', 'C5'],
-  ['Bb3', 'F4', 'Bb4', 'D5'],
-  ['A3', 'G4', 'Bb4', 'E5'],
-  ['A3', 'F4', 'C5', 'F5'],
-  ['C4', 'E4', 'C5', 'E5'],
-  ['F3', 'F4', 'A4', 'D5'],
-  ['G3', 'D4', 'G4', 'D5'],
-  ['C3', 'E4', 'G4', 'C5'],
-];
+// const chordsArray = [
+//   ['F3', 'A3', 'C4', 'F4'],
+//   ['E3', 'G3', 'C4', 'C5'],
+//   ['F3', 'A3', 'C4', 'A4'],
+//   ['D3', 'A3', 'D4', 'F4'],
+//   ['A2', 'A3', 'F4', 'C5'],
+//   ['B2', 'F3', 'B4', 'D5'],
+//   ['D3', 'F4', 'B4', 'D5'],
+//   ['F3', 'F4', 'A4', 'C5'],
+//   ['F3', 'F4', 'A4', 'C5'],
+//   ['Bb3', 'F4', 'Bb4', 'D5'],
+//   ['A3', 'G4', 'Bb4', 'E5'],
+//   ['A3', 'F4', 'C5', 'F5'],
+//   ['C4', 'E4', 'C5', 'E5'],
+//   ['F3', 'F4', 'A4', 'D5'],
+//   ['G3', 'D4', 'G4', 'D5'],
+//   ['C3', 'E4', 'G4', 'C5'],
+// ];
 
-beats = [];
-for (var i = 0; i < chordsArray.length; i++) {
-	beats.push([]);
-	for (var j = 0; j < 4; j++) {
-		beats[i].push(new Note(chordsArray[i][j], "q"))
-	}
-}
+// beats = [];
+// for (var i = 0; i < chordsArray.length; i++) {
+// 	beats.push([]);
+// 	for (var j = 0; j < 4; j++) {
+// 		beats[i].push(new Note(chordsArray[i][j], "q"))
+// 	}
+// }
 
 	playChordsWithPause();
 	
@@ -1984,13 +2002,13 @@ for (var i = 0; i < chordsArray.length; i++) {
 	
 		}
 	
-	beats = [];
-	for (var i = 0; i < chordsArray.length; i++) {
-	beats.push([]);
-	for (var j = 0; j < 4; j++) {
-		beats[i].push(new Note(chordsArray[i][j], "q"))
-	}
-}
+// 	beats = [];
+// 	for (var i = 0; i < chordsArray.length; i++) {
+// 	beats.push([]);
+// 	for (var j = 0; j < 4; j++) {
+// 		beats[i].push(new Note(chordsArray[i][j], "q"))
+// 	}
+// }
 
 	console.log(beats);
 		
@@ -2267,15 +2285,68 @@ for (var j = 0; j < note.length; j++){
 	}
 	
 	
+async function loadTrainingData3() {
+	const inputElement = document.getElementById('textInput');
+        const inputValue = inputElement.value;
+        inputElement.value = '';
+    const url = 'https://api.openai.com/v1/chat/completions'
+    const apiKey = '';
+    const bearer = 'Bearer ' + apiKey
+    let prompt = [
+        { role: "system", content: "You are composer of music. You generate beautiful midi pieces in json notation that can be played back by Tone.js. The json notation should have a single group of 16 chords that contain a field 'pitch' with the note letter and octave. Generate this style of music: " + inputValue},
+        { role: "assistant", content: "Generate a music piece" }
+    ];
+    console.log(prompt)
+    console.log(bearer)
+
+    const data = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Authorization': bearer,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            model: 'gpt-3.5-turbo-1106',
+            messages: prompt,
+            max_tokens: 500,
+            response_format: { type: "json_object" }
+
+        }),
+    }).then(response => {
+        console.log(response)
+        return response.json()
+    });
+
+    console.log(data);
+
+    console.log(data.choices[0].message.content);
+    console.log(data);
+	json = JSON.parse(data.choices[0].message.content);
+	const pitches = json.chords.map(chord => chord.pitch);
 	
-	 
+		console.log(pitches);
+
+		beats = [];
+	for (var i = 0; i < pitches.length; i++) {
+		beats.push([]);
+		beats[i].push(new Note(pitches[i], "q"))
+
+}
+
+console.log(beats);
+		
+playChordsWithPause();
 	
 	
 	
 	
-	
-	
-	
+
+console.log(beats);
+		
+	drawNotes();
+}
+
+
 	function trimToSixteen(inputArray, closestSequence){
 	
 	
