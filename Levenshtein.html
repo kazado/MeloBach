@@ -1,0 +1,167 @@
+<HTML>
+<body onload = "load()">
+
+<script type ="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+<script type="text/javascript">
+function LAlgorithm(inputArray, existingSequences) {
+	var closestSequence = null;
+	var closestDistance = Infinity;
+	for (let i = 0; i < existingSequences.length; i++) {
+		const existingSequence = existingSequences[i];
+		const distance = findDistance(existingSequence, inputArray);
+		if (distance < closestDistance) {
+			closestDistance = distance;
+			closestSequence = existingSequence;
+		} 
+	}
+	return closestSequence;
+}
+
+function findDistance(sequenceA, sequenceB) {
+	const m = sequenceA.length;
+	const n = sequenceB.length;
+	const dp = [];
+	for (let i = 0; i <= m; i++){
+		dp[i] = [];
+		dp[i][0] = i;
+	}
+	for (let j = 0; j <= n; j++){
+		dp[0][j] = j;
+	}
+	for (i = 1; i <= m; i++) {
+		for (j = 1; j <= n; j++) {
+			const cost = sequenceA[i - 1] === sequenceB[j - 1] ? 0 : 1;
+			dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+		}
+	}
+	return dp[m][n];
+}
+
+function load() {
+	
+	loadTrainingData();
+	const targetNotes = ['C', 'E', 'G'];
+const arrayOfSongs = [
+  [['C','F'], ['E','B'], ['G', 'D', 'C']],
+  [['A'], ['C'], ['E']],
+  [['D'], ['F'], ['A']],
+];
+
+
+
+
+
+}
+function loadTrainingData() {
+         
+         // Sample JSON data
+         $.getJSON("ChordGetterJSON.json", function(jsonData) {
+    console.log(jsonData); // this will show the info it in firebug console
+	const targetNotes = ['C', 'E', 'G']; 
+	var chords = [];
+	  for (var i = 0; i < jsonData.length; i++) {
+chords.push(jsonData[i]['chords']);
+	  }
+	  const closestMatch = findClosestMatch(targetNotes, chords);
+
+console.log(closestMatch);
+const trimMatched = trimToSixteen(targetNotes, closestMatch);
+console.log(trimMatched);
+      });
+	  
+}
+ 
+
+function trimToSixteen(inputArray, closestSequence){
+	var trimmedNotes = [];
+	var scores = [];
+	console.log(inputArray);
+	console.log(closestSequence.length - inputArray.length);
+
+	for (var i = 0; i < closestSequence.length - inputArray.length; i++) {
+		score = 0;
+		const sequenceSubsection = closestSequence.slice(i,i+inputArray.length);
+		console.log(sequenceSubsection);
+		for (var j = 0; j < inputArray.length; j++) {
+		const targetNote = inputArray[j];
+		const matchedBeat = sequenceSubsection[j];
+		if (matchedBeat.includes(targetNote)){
+			score++;
+		}
+		
+		}
+		scores.push(score);
+		console.log(scores);
+	}
+	
+	let max = scores[0];
+	let maxIndex = 0;
+	for (var i = 0; i < scores.length; i++) {
+		if (scores[i] > max) {
+			max = scores[i];
+			maxIndex = i;
+		}
+	}
+	return closestSequence.slice(maxIndex, 16+inputArray.length);
+	
+}
+   function findClosestMatch(targetNotes, arrayOfSongs) {
+  let closestMatchIndex = -1;
+  let closestMatchDistance = Infinity;
+
+  for (let i = 0; i < arrayOfSongs.length; i++) {
+    const currentSong = arrayOfSongs[i];
+    const distance = calculateDistance(targetNotes, currentSong);
+
+    if (distance < closestMatchDistance) {
+      closestMatchDistance = distance;
+      closestMatchIndex = i;
+    }
+  }
+
+  if (closestMatchIndex === -1) {
+    return null; // No match found
+  }
+
+  return arrayOfSongs[closestMatchIndex];
+}
+
+function calculateDistance(a, b) {
+  const m = a.length;
+  const n = b.length;//current song length
+
+  if (m === 0) return n;
+  if (n === 0) return m;
+
+  const dp = [];
+
+  for (let i = 0; i <= m; i++) {
+    dp[i] = [i];
+  }
+
+  for (let j = 1; j <= n; j++) {
+    dp[0][j] = j;
+  }
+
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      //const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+     	const cost = b[j - 1].includes(a[i - 1]) ? 0 : 1;
+      dp[i][j] = Math.min(
+        dp[i - 1][j] + 1,
+        dp[i][j - 1] + 1,
+        dp[i - 1][j - 1] + cost
+      );
+    }
+  }
+
+  return dp[m][n];
+}
+
+
+
+   
+
+</script>
+</body>
+</HTML>
