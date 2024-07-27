@@ -777,8 +777,6 @@ input[type="text"] {
 		<button onclick="loadTrainingData1()" style="font-size: 40.5px;" class="button2">CHORALE HARMONIZE</button>
 		<button onclick="loadTrainingData2()" style="font-size: 40.5px;" class="button2">MELODIZE</button>
 		<br>
-		<input type="text" id="textInput" placeholder="Enter preferred music style">
-		<button onclick="loadTrainingData3()" style="font-size: 40.5px;" class="button2">PROMPT GENERATION</button>
 
 		<br>
 
@@ -2284,67 +2282,6 @@ for (var j = 0; j < note.length; j++){
 	
 	}
 	
-	
-async function loadTrainingData3() {
-	const inputElement = document.getElementById('textInput');
-        const inputValue = inputElement.value;
-        inputElement.value = '';
-    const url = 'https://api.openai.com/v1/chat/completions'
-    const apiKey = '';
-    const bearer = 'Bearer ' + apiKey
-    let prompt = [
-        { role: "system", content: "You are composer of music. You generate beautiful midi pieces in json notation that can be played back by Tone.js. The json notation should have a single group of 16 chords that contain a field 'pitch' with the note letter and octave. Generate this style of music: " + inputValue},
-        { role: "assistant", content: "Generate a music piece" }
-    ];
-    console.log(prompt)
-    console.log(bearer)
-
-    const data = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Authorization': bearer,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            model: 'gpt-3.5-turbo-1106',
-            messages: prompt,
-            max_tokens: 500,
-            response_format: { type: "json_object" }
-
-        }),
-    }).then(response => {
-        console.log(response)
-        return response.json()
-    });
-
-    console.log(data);
-
-    console.log(data.choices[0].message.content);
-    console.log(data);
-	json = JSON.parse(data.choices[0].message.content);
-	const pitches = json.chords.map(chord => chord.pitch);
-	
-		console.log(pitches);
-
-		beats = [];
-	for (var i = 0; i < pitches.length; i++) {
-		beats.push([]);
-		beats[i].push(new Note(pitches[i], "q"))
-
-}
-
-console.log(beats);
-		
-playChordsWithPause();
-	
-	
-	
-	
-
-console.log(beats);
-		
-	drawNotes();
-}
 
 
 	function trimToSixteen(inputArray, closestSequence){
